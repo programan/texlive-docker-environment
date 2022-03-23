@@ -9,9 +9,26 @@
 
 ## コンパイル方法
 
-### ドキュメントのソースファイルをコンパイルしてPDFを作成
+### LaTexドキュメントのソースファイルをコンパイルしてPDFを作成
 
-* `docker run --rm -it -v ${PWD}:/workdir programan/texlive:2021 uplatex -shell-escape "<document_name>"`
-* `docker run --rm -it -v ${PWD}:/workdir programan/texlive:2021 dvipdfmx "<document_name>"`
+* Linux
+  * `docker run --rm -it --user $(id -u $USER):$(id -g $USER) -v ${PWD}:/workdir programan/texlive:2021 uplatex -shell-escape "<document_name>"`
+  * `docker run --rm -it --user $(id -u $USER):$(id -g $USER) -v ${PWD}:/workdir programan/texlive:2021 dvipdfmx "<document_name>"`
+* Windows
+  * `docker run --rm -it -v ${PWD}:/workdir programan/texlive:2021 uplatex -shell-escape "<document_name>"`
+  * `docker run --rm -it -v ${PWD}:/workdir programan/texlive:2021 dvipdfmx "<document_name>"`
 
+### PlantUML
+
+* Linux
+  * `docker run --rm -it --user $(id -u $USER):$(id -g $USER) -v ${PWD}:/workdir programan/texlive:2021 plantuml "plantuml file"`
+* Windows
+  * `docker run --rm -it -v ${PWD}:/workdir programan/texlive:2021 plantuml "plantuml file"`
+
+### Pandoc
+
+* Linux
+  * `docker run --rm -it --user $(id -u $USER):$(id -g $USER) -v ${PWD}:/workdir programan/texlive:2021 pandoc -s -o "output file name" --metadata pagetitle="pagetitle" "input file name"`
+* Windows
+  * `docker run --rm -it -v ${PWD}:/workdir programan/texlive:2021 pandoc -s -o "output file name" --metadata pagetitle="pagetitle" "input file name"`
 
