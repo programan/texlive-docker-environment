@@ -9,6 +9,8 @@ ENV PATH $PATH:/usr/local/texlive/2021/bin/x86_64-linux
 
 
 RUN set -x \
+    && mkdir -p /usr/share/man/man1 \
+    && mkdir -p /usr/share/plantuml \
     && apt update \
     && apt install -y \
     perl \
@@ -20,13 +22,26 @@ RUN set -x \
     wget \
     tar \
     unzip \
-    xz-utils && \
+    xz-utils \
+    gcc \
+    g++ \
+    make \
+    pandoc \
+    openjdk-11-jre && \
     pip install pygments && \
     cd /tmp/ && \
-    curl -L -O https://mirrors.ctan.org/fonts/haranoaji.zip && \
-    curl -L -O https://mirrors.ctan.org/fonts/haranoaji-extra.zip && \
+    curl -LO https://github.com/plantuml/plantuml/releases/download/v1.2022.2/plantuml-1.2022.2.jar && \
+    mv plantuml-1.2022.2.jar /usr/share/plantuml/plantuml.jar && \
+    curl -LO https://mirrors.ctan.org/fonts/haranoaji.zip && \
+    curl -LO https://mirrors.ctan.org/fonts/haranoaji-extra.zip && \
     unzip haranoaji.zip && \
     unzip haranoaji-extra.zip && \
+    curl -LO https://www2.graphviz.org/Packages/stable/portable_source/graphviz-2.44.0.tar.gz && \
+    tar xvzf graphviz-2.44.0.tar.gz && \
+    cd graphviz-2.44.0 && \
+    ./configure && \
+    make && \
+    make install && \
     mkdir -p /tmp/install-tl-unx && \
     curl -L ftp://tug.org/historic/systems/texlive/2021/install-tl-unx.tar.gz | \
       tar -xz -C /tmp/install-tl-unx --strip-components=1 && \
@@ -68,12 +83,19 @@ RUN set -x \
     && ln -s /usr/local/share/fonts/opentype/haranoaji-extra/HaranoAji*.otf \
       /usr/local/texlive/texmf-local/fonts/opentype/haranoaji-extra/ \
     && mktexlsr \
+    && rm -fr /tmp/graphviz-* \
     && rm -rf /var/lib/apt/lists/* \
     && rm -fr /tmp/install-tl-unx \
     && rm -f /tmp/haranoaji.zip \
     && rm -f /tmp/haranoaji-extra.zip \
     && rm -rf /tmp/haranoaji \
     && rm -rf /tmp/haranoaji-extra
+
+RUN set -x \
+    && echo '#! /bin/bash' > plantuml \
+    && echo '/usr/bin/java -jar /usr/share/plantuml/plantuml.jar -svg -charset UTF-8 ${@}' >> plantuml \
+    && mv plantuml /usr/local/bin/ \
+    && chmod +x /usr/local/bin/plantuml
 
 
 WORKDIR /workdir
