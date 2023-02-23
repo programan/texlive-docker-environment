@@ -1,7 +1,7 @@
 # FROM debian:buster-slim
-FROM python:3.8.8-slim-buster
+FROM python:3.11.2-slim-bullseye
 
-ENV PATH $PATH:/usr/local/texlive/2021/bin/x86_64-linux
+ENV PATH $PATH:/usr/local/texlive/2022/bin/x86_64-linux
 
 
 # https://noto-website-2.storage.googleapis.com/pkgs/NotoSansCJKjp-hinted.zip
@@ -14,6 +14,7 @@ RUN set -x \
     && apt update \
     && apt install -y \
     perl \
+    vim \
     fonts-noto-cjk \
     fonts-noto-cjk-extra \
     libfontconfig-dev \
@@ -27,23 +28,18 @@ RUN set -x \
     g++ \
     make \
     pandoc \
-    openjdk-11-jre && \
+    openjdk-11-jre \
+    graphviz && \
     pip install pygments && \
     cd /tmp/ && \
-    curl -LO https://github.com/plantuml/plantuml/releases/download/v1.2022.2/plantuml-1.2022.2.jar && \
-    mv plantuml-1.2022.2.jar /usr/share/plantuml/plantuml.jar && \
+    curl -LO https://github.com/plantuml/plantuml/releases/download/v1.2023.1/plantuml-1.2023.1.jar && \
+    mv plantuml-1.2023.1.jar /usr/share/plantuml/plantuml.jar && \
     curl -LO https://mirrors.ctan.org/fonts/haranoaji.zip && \
     curl -LO https://mirrors.ctan.org/fonts/haranoaji-extra.zip && \
     unzip haranoaji.zip && \
     unzip haranoaji-extra.zip && \
-    curl -LO https://www2.graphviz.org/Packages/stable/portable_source/graphviz-2.44.0.tar.gz && \
-    tar xvzf graphviz-2.44.0.tar.gz && \
-    cd graphviz-2.44.0 && \
-    ./configure && \
-    make && \
-    make install && \
     mkdir -p /tmp/install-tl-unx && \
-    curl -L ftp://tug.org/historic/systems/texlive/2021/install-tl-unx.tar.gz | \
+    curl -L ftp://tug.org/historic/systems/texlive/2022/install-tl-unx.tar.gz | \
       tar -xz -C /tmp/install-tl-unx --strip-components=1 && \
     printf "%s\n" \
       "selected_scheme scheme-basic" \
@@ -52,6 +48,7 @@ RUN set -x \
       > /tmp/install-tl-unx/texlive.profile && \
     /tmp/install-tl-unx/install-tl \
       --profile=/tmp/install-tl-unx/texlive.profile && \
+    tlmgr update --self --all && \
     tlmgr install \
       collection-latexrecommended \
       collection-latexextra \
@@ -83,7 +80,6 @@ RUN set -x \
     && ln -s /usr/local/share/fonts/opentype/haranoaji-extra/HaranoAji*.otf \
       /usr/local/texlive/texmf-local/fonts/opentype/haranoaji-extra/ \
     && mktexlsr \
-    && rm -fr /tmp/graphviz-* \
     && rm -rf /var/lib/apt/lists/* \
     && rm -fr /tmp/install-tl-unx \
     && rm -f /tmp/haranoaji.zip \
