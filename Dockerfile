@@ -36,8 +36,10 @@ RUN set -x \
     mv plantuml-1.2023.1.jar /usr/share/plantuml/plantuml.jar && \
     curl -LO https://mirrors.ctan.org/fonts/haranoaji.zip && \
     curl -LO https://mirrors.ctan.org/fonts/haranoaji-extra.zip && \
+    curl -SL https://osdn.net/projects/mytexpert/downloads/26068/jlisting.sty.bz2/ -o jlisting.sty.bz2 && \
     unzip haranoaji.zip && \
     unzip haranoaji-extra.zip && \
+    bzip2 -d jlisting.sty.bz2 && \
     mkdir -p /tmp/install-tl-unx && \
     curl -L ftp://tug.org/historic/systems/texlive/2022/install-tl-unx.tar.gz | \
       tar -xz -C /tmp/install-tl-unx --strip-components=1 && \
@@ -79,6 +81,7 @@ RUN set -x \
       /usr/local/texlive/texmf-local/fonts/opentype/haranoaji-extra \
     && ln -s /usr/local/share/fonts/opentype/haranoaji-extra/HaranoAji*.otf \
       /usr/local/texlive/texmf-local/fonts/opentype/haranoaji-extra/ \
+    && mv /tmp/jlisting.sty /usr/local/texlive/2022/texmf-dist/tex/latex/listings/ \
     && mktexlsr \
     && rm -rf /var/lib/apt/lists/* \
     && rm -fr /tmp/install-tl-unx \
